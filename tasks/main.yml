@@ -1,0 +1,47 @@
+---
+- name: Create report directory
+  file:
+    path: "{{ clickhouse_report_local_dir }}"
+    state: directory
+
+- name: Install python requirenments
+  pip:
+    name:
+      - google-cloud-storage
+      - boto3
+
+- name: Copy clickhouse-report.py script
+  template:
+    src: "clickhouse-report.py"
+    dest: '/usr/bin/clickhouse-report.py'
+    mode: 0755
+
+- name: Add cronjob for clickhouse-report
+  cron:
+    name: Generate clickhosue report and upload to remote bucket
+    minute: "{{ clickhouse_report_cron_minute }}"
+    hour: "{{ clickhouse_report_cron_hour }}"
+    day: "{{ clickhouse_report_cron_day }}"
+    month: "{{ clickhouse_report_cron_month }}"
+    weekday: "{{ clickhouse_report_cron_weekday }}"
+    job: 'clickhouse-report.py >> /var/log/clickhouse-report.log 2>&1'
+
+- name: Add crontab env variables
+  cron:
+    name: "{{ item.name }}"
+    env: yes
+    job: "{{ item.value }}"
+  when: item.value != ''
+  loop:
+    - { name: 'AWS_ACCESS_KEY_ID', value: '{{ clickhouse_report_aws_access_key_id }}' }
+    - { name: 'AWS_SECRET_ACCESS_KEY', value: '{{ clickhouse_report_aws_secret_access_key }}' }
+    - { name: 'AWS_DEFAULT_REGION', value: '{{ clickhouse_report_aws_region }}' }
+    - { name: 'GOOGLE_APPLICATION_CREDENTIALS', value: '{{ clickhouse_report_gcp_credentials_file }}' }
+
+- name: Copy logrotate conf for clickhouse-report logs
+  copy:
+    src: logrotate.conf
+    dest: /etc/logrotate.d/clickhouse-report
+    owner: root
+    group: root
+    mode: '0644'

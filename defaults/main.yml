@@ -1,0 +1,30 @@
+clickhouse_report_db_host: "localhost"
+clickhouse_report_db_user: "root"
+clickhouse_report_db_password: "root"
+clickhouse_report_db_name: "test"
+clickhouse_report_local_dir: "/tmp/clickhouse-report"
+clickhouse_report_disk_space_threshold: 80
+clickhouse_report_remote_storage: "none" # gcs/s3 supported
+clickhouse_report_bucket_name: "clickhouse-report"
+clickhouse_report_bucket_dir: "daily"
+clickhouse_report_bucket_dir_split_by_months: false
+clickhouse_report_delete_locally: false
+clickhouse_report_skip_when_delete_locally: 0
+clickhouse_report_telergam_api_token: ""
+clickhouse_report_telegram_chat_id: ""
+clickhouse_report_filename_template: "{{ clickhouse_report_db_name }}_report"
+clickhouse_report_file_format: "csv"
+## For AWS auth using access keys
+clickhouse_report_aws_access_key_id: ""
+clickhouse_report_aws_secret_access_key: ""
+clickhouse_report_aws_region: ""
+
+## For GCP auth using credentials json file
+clickhouse_report_gcp_credentials_file: ""
+
+## Cron scheduler settings
+clickhouse_report_cron_minute: 15
+clickhouse_report_cron_hour: 0
+clickhouse_report_cron_day: "*"
+clickhouse_report_cron_month: "*"
+clickhouse_report_cron_weekday: "*"
